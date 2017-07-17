@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+    <script src="Field.js"></script>
+    <script src="PlayerCircle.js"></script>
+    <script>    
+	
+	var canvas;
+	var stage;
+	var update;
+
+	function init() {
+		canvas = document.getElementById("jpwWhiteCanvas");
+		stage = new createjs.Stage(canvas);
+		createjs.Touch.enable(stage);
+		stage.enableMouseOver();
+		stage.mouseMoveOutside = true;
+
+		addFieldGraphics(stage);
+
+		var title = new createjs.Text("Doubles - Rip", "36px Arial bold", "white");
+		title.x = 50;
+		title.y = 0;
+		stage.addChild(title);		
+
+		addPositionPlaceholder(0, 35, "Center", "C");
+		addPositionPlaceholder(-80, 35, "Left Guard", "LG");
+		addPositionPlaceholder(-160, 35, "Left Tackle", "LT");
+		addPositionPlaceholder(80, 35, "Right Guard", "RG");
+		addPositionPlaceholder(160, 35, "Right Tackle", "RT");
+
+		addPositionPlaceholder(0, 200, "Quarterback", "1");
+
+		addPositionPlaceholder(120, 160, "Running Back", "2");
+
+		addPositionPlaceholder(-300, 100, "Left Slot", "3");
+		addPositionPlaceholder(300, 100, "Right Slot", "4");
+
+		addPositionPlaceholder(-420, 35, "Left Receiver", "L");
+		addPositionPlaceholder(420, 35, "Right Receiver", "R");
+
+		var playerQB = new PlayerCircle("Quarterback", "1", "red");
+		playerQB.x = canvas.width / 2;
+		playerQB.y = canvas.height / 2;
+		stage.addChild(playerQB);
+		var playerRB = new PlayerCircle("Running Back", "2", "green");
+		playerRB.x = canvas.width / 2;
+		playerRB.y = canvas.height / 2;
+		stage.addChild(playerRB);
+		var playerLS = new PlayerCircle("Left Slot", "3", "blue");
+		playerLS.x = canvas.width / 2;
+		playerLS.y = canvas.height / 2;
+		stage.addChild(playerLS);
+		var playerRS = new PlayerCircle("Right Slot", "4", "blue");
+		playerRS.x = canvas.width / 2;
+		playerRS.y = canvas.height / 2;
+		stage.addChild(playerRS);
+		
+		stage.update();
+
+		createjs.Ticker.addEventListener("tick", tick);
+	}
+	  
+	function addPositionPlaceholder(offsetX, offsetY, name, abbreviation){
+		var player = new createjs.Shape();
+		var playerSize = 24
+
+		player.name = name;
+		player.graphics.setStrokeStyle(3)
+						.setStrokeDash([10, 5])
+						.beginStroke("grey")
+						.beginFill("white")
+						.drawCircle(500 - 5 + offsetX,250 + offsetY, playerSize);
+		player.alpha = .8;
+		player.scale = player.originalScale = 1.0;
+		player.on("click", handleClick);
+		player.on("rollover", handleRollover);
+		player.on("rollout", handleRollover);
+
+		stage.addChild(player);
+	}
+	function handleClick(event){
+		alert(event.target.name);	  
+	}
+
+	function handleRollover(event){
+		event.target.alpha = event.type == "rollover" ? 1.0 : .8;
+		event.target.radius = event.type == "rollover" ? event.target.playerSize * 1.2 : event.target.playerSize;
+		update = true;
+	}
+
+	function tick(event) {
+		// this set makes it so the stage only re-renders when an event handler indicates a change has happened.
+		if (update) {
+			update = false; // only update once
+			stage.update(event);
+		}
+	}
+
+    </script>
+  </head>
+  <body onload="init();">
+    <canvas id="jpwWhiteCanvas" width="1000" height="500"></canvas>
+  </body>
+</html>
